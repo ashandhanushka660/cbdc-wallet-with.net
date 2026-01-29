@@ -97,4 +97,17 @@ cbdcwalletenterprise/
 
 Licensed for institutional research and development. 
 
+## 📡 Deployment & Governance
+
+### **Live Portal (Frontend)**
+*   **Vercel URL**: [https://client-4whjirqps-dhanuashans-projects.vercel.app](https://client-4whjirqps-dhanuashans-projects.vercel.app)
+*   **GitHub Repository**: [https://github.com/ashandhanushka660/cbdc-wallet-with.net](https://github.com/ashandhanushka660/cbdc-wallet-with.net)
+
+### **Infrastructure**
+*   **Frontend**: Deployed via **Vercel** with full Quasar SPA support.
+*   **Backend**: .NET 8 Minimal API (Ready for Azure).
+*   **Database**: EF Core + SQLite/SQL Server LocalDB.
+
+---
+
 **Built with ❤️ by Antigravity AI for Sovereign Digital Economies.**
