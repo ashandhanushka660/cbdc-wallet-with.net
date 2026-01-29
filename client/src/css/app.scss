@@ -1,0 +1,300 @@
+@use "sass:color";
+
+// app global css in SCSS form
+
+// Dark Theme Color Palette
+$dark-bg: #0a0e27;
+$dark-surface: #151932;
+$dark-card: #1a1f3a;
+$dark-card-hover: #1f2442;
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+$accent-purple: #667eea;
+$accent-pink: #f5576c;
+$text-primary: #e4e7eb;
+$text-secondary: #9ca3af;
+$border-color: rgba(255, 255, 255, 0.1);
+
+// Global Styles
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: $dark-bg;
+    color: $text-primary;
+    overflow-x: hidden;
+}
+
+.body--dark {
+    background: $dark-bg;
+    color: $text-primary;
+}
+
+// Premium Card Styles
+.wallet-card {
+    background: $dark-card;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid $border-color;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: $primary-gradient;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+        background: $dark-card-hover;
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+
+        &::before {
+            opacity: 1;
+        }
+    }
+}
+
+.gradient-card {
+    background: $primary-gradient;
+    border-radius: 24px;
+    padding: 32px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: shimmer 3s infinite;
+    }
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-10%, -10%);
+    }
+}
+
+// Button Styles
+.btn-primary {
+    background: $primary-gradient;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn-secondary {
+    background: transparent;
+    color: $accent-purple;
+    border: 2px solid $accent-purple;
+    padding: 10px 30px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: $accent-purple;
+        color: white;
+    }
+}
+
+// Input Styles
+.input-field {
+    background: $dark-surface;
+    border: 1px solid $border-color;
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: $text-primary;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    width: 100%;
+
+    &:focus {
+        outline: none;
+        border-color: $accent-purple;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    &::placeholder {
+        color: $text-secondary;
+    }
+}
+
+// Typography
+.text-gradient {
+    background: $primary-gradient;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.text-large {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.text-medium {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.text-small {
+    font-size: 14px;
+    color: $text-secondary;
+}
+
+// Utility Classes
+.glass-effect {
+    background: rgba(26, 31, 58, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shadow-lg {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-xl {
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+}
+
+// Animations
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: $dark-surface;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $accent-purple;
+    border-radius: 4px;
+
+    &:hover {
+        background: color.scale($accent-purple, $lightness: 10%);
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .wallet-card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .gradient-card {
+        padding: 24px;
+        border-radius: 20px;
+    }
+
+    .text-large {
+        font-size: 32px;
+    }
+}
+
+// Sidebar & Layout Utilities
+.bg-darker {
+    background: #0a0a0b !important;
+}
+
+.bg-glass {
+    background: rgba(10, 10, 11, 0.8) !important;
+    backdrop-filter: blur(12px);
+}
+
+.sidebar-item {
+    color: #9ca3af !important;
+    border-radius: 12px;
+    margin: 4px 12px;
+    transition: all 0.3s ease;
+
+    .q-icon {
+        color: #9ca3af;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: white !important;
+
+        .q-icon {
+            color: white;
+        }
+    }
+
+    &.q-router-link--exact-active {
+        background: rgba(0, 210, 255, 0.1) !important;
+        color: #00d2ff !important;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.1);
+
+        .q-icon {
+            color: #00d2ff !important;
+            filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.5));
+        }
+    }
+}
+
+.text-blue-2 {
+    color: #60efff !important;
+}
