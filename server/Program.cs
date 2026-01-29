@@ -8,8 +8,20 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// For free hosting (Render/Render/Railway), they often provide DATABASE_URL
+var envUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(envUrl))
+{
+    // Convert postgres://user:pass@host:port/db to Npgsql format
+    var uri = new Uri(envUrl);
+    var userInfo = uri.UserInfo.Split(':');
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.Trim('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // Add CORS for frontend
 builder.Services.AddCors(options =>
