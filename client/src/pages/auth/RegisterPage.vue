@@ -130,6 +130,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { registerUser } from 'src/api'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -145,19 +146,13 @@ const loading = ref(false)
 async function onSubmit() {
   loading.value = true
   try {
-    const response = await fetch('http://localhost:5005/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-        firstName: firstName.value,
-        lastName: lastName.value,
-        nationalId: nationalId.value
-      })
+    const data = await registerUser({
+      email: email.value,
+      password: password.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      nationalId: nationalId.value
     })
-
-    const data = await response.json()
 
     if (data.success) {
       localStorage.setItem('cbdc_user', JSON.stringify(data.user))
