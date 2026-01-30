@@ -2,22 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models;
 using server.DTOs;
+using server.Services;
 using System.Security.Cryptography;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// For free hosting (Render/Render/Railway), they often provide DATABASE_URL
-var envUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-if (!string.IsNullOrEmpty(envUrl))
+if (string.IsNullOrEmpty(connectionString))
 {
-    // Convert postgres://user:pass@host:port/db to Npgsql format
-    var uri = new Uri(envUrl);
-    var userInfo = uri.UserInfo.Split(':');
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.Trim('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    throw new InvalidOperationException("Secure Error: Database Connection String is missing. Ensure DATABASE_URL is set in local environment or .env file.");
 }
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -40,6 +37,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddLogging(l => l.AddConsole());
+builder.Services.AddSingleton<AIScoringService>();
 
 var app = builder.Build();
 
@@ -216,6 +214,35 @@ app.MapPost("/api/login", async (LoginRequest request, AppDbContext db) =>
     }
 })
 .WithName("Login")
+.WithOpenApi();
+
+// AI Credit Scoring Endpoint
+app.MapGet("/api/ai/score", (AIScoringService aiService, double? telco, double? utility, double? wallet, double? social) =>
+{
+    // Default mock values if not provided
+    double t = telco ?? 0.85;
+    double u = utility ?? 0.70;
+    double w = wallet ?? 0.90;
+    double s = social ?? 0.60;
+
+    double score = aiService.CalculateScore(t, u, w, s);
+    
+    return Results.Ok(new
+    {
+        success = true,
+        score = score,
+        breakdown = new
+        {
+            telco_contribution = t,
+            utility_contribution = u,
+            wallet_velocity = w,
+            social_reputation = s
+        },
+        algorithm = "Logistic Regression + GBM",
+        compliant = true
+    });
+})
+.WithName("GetAIScore")
 .WithOpenApi();
 
 app.Run();

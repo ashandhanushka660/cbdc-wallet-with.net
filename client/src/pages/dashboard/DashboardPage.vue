@@ -47,9 +47,18 @@
           <div class="col-6">
             <q-card flat class="glass-card q-pa-md height-100 flex flex-center text-center cursor-pointer" @click="router.push('/dashboard/loans')">
               <div>
-                <q-icon name="psychology" color="accent" size="32px" class="q-mb-sm" />
-                <div class="text-h6 text-weight-bold">AI Credit Score</div>
-                <div class="text-primary text-weight-bolder">742 - EXCELLENT</div>
+                <q-icon name="psychology" color="accent" size="32px" class="q-mr-sm" />
+                <div class="text-h6 text-weight-bold">AI Credit Index</div>
+                <div class="text-primary text-h4 text-weight-bolder">{{ aiDetails.score }}</div>
+                <div class="text-caption text-grey-5 uppercase tracking-widest">{{ aiDetails.score > 700 ? 'EXCELLENT' : 'GOOD' }}</div>
+                <q-tooltip class="bg-dark text-white shadow-24 q-pa-md" style="border: 1px solid #3a7bd5">
+                  <div class="text-weight-bold q-mb-xs">Explainable AI Breakdown ($X$)</div>
+                  <div class="row q-gutter-x-sm">
+                    <span>Telco: {{ (aiDetails.breakdown.telco * 100).toFixed(0) }}%</span>
+                    <span>Utility: {{ (aiDetails.breakdown.utility * 100).toFixed(0) }}%</span>
+                    <span>Velocity: {{ (aiDetails.breakdown.wallet * 100).toFixed(0) }}%</span>
+                  </div>
+                </q-tooltip>
               </div>
             </q-card>
           </div>
@@ -147,7 +156,19 @@ const tickers = ref([
   { name: 'EUR/USD', price: '1.0822', up: true }
 ])
 
-onMounted(() => {
+const aiDetails = ref({
+  score: 0,
+  breakdown: {
+    telco: 0,
+    utility: 0,
+    wallet: 0,
+    social: 0
+  }
+})
+
+import { getAIScore } from 'src/api'
+
+onMounted(async () => {
   const userData = localStorage.getItem('cbdc_user')
   if (userData) {
     const user = JSON.parse(userData)
@@ -158,6 +179,22 @@ onMounted(() => {
       { id: 1, note: 'Sovereign Mint - Testing', amount: 1000.00, created_at: new Date().toISOString() },
       { id: 2, note: 'Atomic Transfer - Gas', amount: -2.50, created_at: new Date(Date.now() - 3600000).toISOString() }
     ]
+
+    // Fetch AI Score
+    try {
+      const aiData = await getAIScore()
+      if (aiData.success) {
+        aiDetails.value.score = aiData.score
+        aiDetails.value.breakdown = {
+          telco: aiData.breakdown.telco_contribution,
+          utility: aiData.breakdown.utility_contribution,
+          wallet: aiData.breakdown.wallet_velocity,
+          social: aiData.breakdown.social_reputation
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch AI Score:', err)
+    }
   }
 })
 

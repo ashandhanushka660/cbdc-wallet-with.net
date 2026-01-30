@@ -22,3 +22,9 @@ export const getHealth = async () => {
     const response = await fetch(`${API_URL}/health`);
     return response.json();
 }
+
+export const getAIScore = async (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const response = await fetch(`${API_URL}/api/ai/score?${query}`);
+    return response.json();
+}

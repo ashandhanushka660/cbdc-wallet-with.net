@@ -44,6 +44,33 @@ This application simulates an institutional-grade intermediary wallet, bridging 
 
 ---
 
+## 🧠 AI Scoring Architecture
+
+The engine utilizes a Logistic Regression baseline enhanced by Gradient Boosting Machines (GBM). This ensures "Explainability" for regulatory compliance while maintaining high predictive accuracy for rural borrowers.
+
+### **1. The Feature Vector ($X$)**
+We define the digital footprint of a rural borrower as a vector $X$:
+$X = \{w_1x_{telco}, w_2x_{utility}, w_3x_{wallet}, w_4x_{social}\}$
+
+*   **$x_{telco}$**: Mobile top-up consistency.
+*   **$x_{utility}$**: Utility payment history.
+*   **$x_{wallet}$**: Wallet transaction velocity.
+*   **$x_{social}$**: Peer-verified reputation.
+
+### **2. Probability of Default ($PD$)**
+The likelihood of default is calculated using the Sigmoid function:
+$PD = \frac{1}{1 + \exp(-(\beta_0 + \sum_{i=1}^{n} \beta_i x_i))}$
+
+### **3. Standardized Score ($S$)**
+Aligned with the **Credit Information Bureau (CRIB) of Sri Lanka**, the score is scaled:
+$S = Offset + Factor \times \ln\left(\frac{1 - PD}{PD}\right)$
+
+*The Factor is determined by the "Points to Double the Odds" (PDO) logic used in industry-standard FICO models.*
+
+---
+
+---
+
 ## 📡 100% Free Deployment Guide
 
 This project is engineered for **Zero-Cost Sovereign Hosting** using the industry's best free tiers.
