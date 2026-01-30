@@ -87,6 +87,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { loginUser } from 'src/api'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -97,27 +98,43 @@ const loading = ref(false)
 
 async function onSubmit() {
   loading.value = true
-  // Mock login for now as we only have /register
-  setTimeout(() => {
-    loading.value = false
-    const existingUser = localStorage.getItem('cbdc_user')
-    if (existingUser) {
-        $q.notify({
-            color: 'green-4',
-            textColor: 'white',
-            icon: 'check_circle',
-            message: 'Login Successful! Welcome back.',
-        })
-        router.push('/dashboard')
+  try {
+    const response = await loginUser({
+      email: email.value,
+      password: password.value
+    })
+
+    if (response.success) {
+      $q.notify({
+        color: 'green-4',
+        textColor: 'white',
+        icon: 'check_circle',
+        message: 'Login Successful! Welcome back.',
+      })
+      
+      // Store user data in localStorage
+      localStorage.setItem('cbdc_user', JSON.stringify(response.user))
+      
+      router.push('/dashboard')
     } else {
-         $q.notify({
-            color: 'red-5',
-            textColor: 'white',
-            icon: 'error',
-            message: 'No account found. Please register first.',
-        })
+      $q.notify({
+        color: 'red-5',
+        textColor: 'white',
+        icon: 'error',
+        message: response.message || 'Login failed. Please check your credentials.',
+      })
     }
-  }, 1000)
+  } catch (error) {
+    console.error('Login error:', error)
+    $q.notify({
+      color: 'red-8',
+      textColor: 'white',
+      icon: 'report_problem',
+      message: 'Network error. Please ensure the backend is running and CORS is configured.',
+    })
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

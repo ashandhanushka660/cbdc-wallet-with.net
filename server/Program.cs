@@ -28,13 +28,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-            "http://localhost:9000", 
-            "http://localhost:5173",
-            "https://client-4whjirqps-dhanuashans-projects.vercel.app"
-        )
+        policy.SetIsOriginAllowed(origin => true) // Allow any origin for development/localtunnel
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -133,7 +130,7 @@ app.MapPost("/api/register", async (RegisterRequest request, AppDbContext db) =>
         db.Wallets.Add(wallet);
         await db.SaveChangesAsync();
 
-        // Return response
+        // Update response
         return Results.Ok(new RegisterResponse
         {
             Success = true,
@@ -160,6 +157,65 @@ app.MapPost("/api/register", async (RegisterRequest request, AppDbContext db) =>
     }
 })
 .WithName("Register")
+.WithOpenApi();
+
+// POST /api/login endpoint
+app.MapPost("/api/login", async (LoginRequest request, AppDbContext db) =>
+{
+    try
+    {
+        // 1. Find user by email
+        var user = await db.Users
+            .Include(u => u.Wallet)
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (user == null)
+        {
+            return Results.Json(new LoginResponse 
+            { 
+                Success = false, 
+                Message = "No account found with this email." 
+            }, statusCode: 404);
+        }
+
+        // 2. Verify password
+        var passwordHash = HashPassword(request.Password);
+        if (user.PasswordHash != passwordHash)
+        {
+            return Results.Json(new LoginResponse 
+            { 
+                Success = false, 
+                Message = "Invalid password." 
+            }, statusCode: 401);
+        }
+
+        // 3. Return user data (matching the register response structure)
+        return Results.Ok(new LoginResponse
+        {
+            Success = true,
+            Message = "Login successful",
+            User = new UserData
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Wallet = user.Wallet != null ? new WalletData
+                {
+                    Id = user.Wallet.Id,
+                    WalletAddress = user.Wallet.WalletAddress,
+                    Balance = user.Wallet.Balance,
+                    Currency = user.Wallet.Currency
+                } : null
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"An error occurred: {ex.Message}");
+    }
+})
+.WithName("Login")
 .WithOpenApi();
 
 app.Run();

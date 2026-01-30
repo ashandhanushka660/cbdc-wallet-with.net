@@ -9,6 +9,15 @@ export const registerUser = async (userData) => {
     return response.json();
 };
 
+export const loginUser = async (credentials) => {
+    const response = await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
+    });
+    return response.json();
+};
+
 export const getHealth = async () => {
     const response = await fetch(`${API_URL}/health`);
     return response.json();
