@@ -1,77 +1,42 @@
-# CBDC Wallet - Enterprise Institutional Digital Wallet
+# CBDC Wallet - AI-Driven Microfinance Research Prototype
 
-A premium, 3-tier sovereign digital wallet system engineered for central bank digital currency (CBDC) ecosystems. Built with a high-performance .NET 8 backend and a visually stunning Quasar (Vue 3) frontend.
-
----
-
-## 🚀 Vision & Architecture
-
-This application simulates an institutional-grade intermediary wallet, bridging the gap between central banks and the modern economy with a focus on:
-- **Sovereign Security**: Identity verification and atomic finality.
-- **AI-Driven Analytics**: Intelligent credit scoring and micro-loan assessments.
-- **Enterprise Reliability**: Built on .NET 8 Minimal APIs for sub-millisecond responsiveness.
-
-### 🏢 3-Tier Enterprise Stack
-- **Frontend**: Quasar Framework + Vite (Institutional Dark Theme, Glassmorphism)
-- **Backend API**: .NET 8 Web API (Clean Architecture, Minimal APIs)
-- **Ledger Storage**: PostgreSQL / Supabase (Relational integrity and auditability)
+**Project URL**: [https://ucxdhrikpgxgzbdkwzfc.supabase.co](https://ucxdhrikpgxgzbdkwzfc.supabase.co)
 
 ---
 
-## 📊 Enterprise Gap Analysis
+## 📄 Abstract
+This application investigates the evolving role of Financial Technology (FinTech) in shaping the modern digital economy, with a focus on developing countries such as **Sri Lanka**. It explores blockchain applications beyond cryptocurrencies, Central Bank Digital Currencies (CBDCs), Artificial Intelligence (AI) for microfinance, and Open Banking APIs. Using a systematic literature review and technical prototyping, the study identifies key trends and proposes a technical framework for AI-driven credit scoring that utilizes alternative data to bridge the financial inclusion gap.
 
-| Feature Category | Current Implementation (v2.5) | Enterprise Institutional Requirement |
+---
+
+## 🚀 Research Methodology & AI Framework
+The proposed methodology moves from static assessment to a dynamic, high-dimensional non-linear analysis of alternative data.
+
+### **1. The Scoring Architecture**
+*   **Feature Vector ($X$)**: We define the digital footprint of a rural borrower as a vector:
+    $$X = \{w_1x_{telco}, w_2x_{utility}, w_3x_{wallet}, w_4x_{social}\}$$
+*   **Probability of Default ($PD$)**: The likelihood of default is calculated using the Sigmoid function:
+    $$PD = \frac{1}{1 + \exp(-(\beta_0 + \sum_{i=1}^{n} \beta_i x_i))}$$
+*   **Standardized Score ($S$)**: To align with the **Credit Information Bureau (CRIB) of Sri Lanka**, the score is scaled using Points to Double the Odds (PDO) logic:
+    $$S = Offset + Factor \times \ln\left(\frac{1 - PD}{PD}\right)$$
+*   **Recovery and Rehabilitation Algorithm ($RI$)**: The system implements a Recovery Index to facilitate rehabilitation for seasonal volatility:
+    $$RI(t) = RI_{base} \cdot (1 - e^{-\lambda \Delta t}) + \sum_{j=1}^{k} \gamma_j \Delta C_j$$
+
+---
+
+## 📊 Traditional CRIB vs. AI Framework
+
+| Feature | Traditional CRIB (Sri Lanka) | Proposed AI-Alternative Scoring |
 | :--- | :--- | :--- |
-| **Authentication** | Session + LocalStorage State | Secure JWT w/ Refresh Tokens, RBAC, OAuth2/OIDC |
-| **Data Integrity** | Transaction Ledger Table | Immutable Audit Trail, Merkle Tree Proofs |
-| **Security** | Basic Hashing | AES-256 Encryption, Azure Key Vault / HSM, MFA/2FA |
-| **Compliance** | Identity Verification Form | KYC/AML Live Monitoring, Regulatory Reporting Hooks |
-| **Reliability** | Dockerized + Health Checks | Microservices, HA Deployments, Kubernetes |
-| **AI/ML** | Rule-based Score Assessment | Real-time ML Pipeline (Python/ONNX) for Risk Analysis |
-
----
-
-## 🎯 Institutional Features (Implemented)
-
-✅ **Institutional Landing Portal**: High-end entrance with feature highlighting and animated backgrounds.
-✅ **Sovereign Dashboard**: Central nerve center with **Real-time Asset Tickers**.
-✅ **Governance Command Center**: Admin portal for ledger and AI score management.
-✅ **Ecosystem Services**: Functional directory for utility, tax, and pension hubs.
-✅ **AI Credit Index**: Visual score meter with risk-tiering and micro-loan application logic.
-✅ **Institutional Settings**: Profile management and Infrastructure security controls (MFA).
-✅ **Enterprise Backend**: Health Checks (`/health`), Global Error Handling, and Swagger documentation.
-✅ **Identity Verification**: Professional NID-based registration flow.
-
----
-
-## 🧠 AI Scoring Architecture
-
-The engine utilizes a Logistic Regression baseline enhanced by Gradient Boosting Machines (GBM). This ensures "Explainability" for regulatory compliance while maintaining high predictive accuracy for rural borrowers.
-
-### **1. The Feature Vector ($X$)**
-We define the digital footprint of a rural borrower as a vector $X$:
-$X = \{w_1x_{telco}, w_2x_{utility}, w_3x_{wallet}, w_4x_{social}\}$
-
-*   **$x_{telco}$**: Mobile top-up consistency.
-*   **$x_{utility}$**: Utility payment history.
-*   **$x_{wallet}$**: Wallet transaction velocity.
-*   **$x_{social}$**: Peer-verified reputation.
-
-### **2. Probability of Default ($PD$)**
-The likelihood of default is calculated using the Sigmoid function:
-$PD = \frac{1}{1 + \exp(-(\beta_0 + \sum_{i=1}^{n} \beta_i x_i))}$
-
-### **3. Standardized Score ($S$)**
-Aligned with the **Credit Information Bureau (CRIB) of Sri Lanka**, the score is scaled:
-$S = Offset + Factor \times \ln\left(\frac{1 - PD}{PD}\right)$
-
-*The Factor is determined by the "Points to Double the Odds" (PDO) logic used in industry-standard FICO models.*
-
----
+| **Data Source** | Formal Bank Collateral | Utility, CBDC Velocity, Telco |
+| **Accessibility** | Banked Population Only | Inclusive for Rural MSMEs |
+| **Update Cycle** | Monthly/Quarterly | Real-Time / Dynamic |
+| **Recovery Path** | Static (Years) | Mathematical Rehabilitation (RI) |
 
 ---
 
 ## 📡 100% Free Deployment Guide
+...
 
 This project is engineered for **Zero-Cost Sovereign Hosting** using the industry's best free tiers.
 

@@ -227,10 +227,14 @@ app.MapGet("/api/ai/score", (AIScoringService aiService, double? telco, double? 
 
     double score = aiService.CalculateScore(t, u, w, s);
     
+    // Calculate recovery index for a mock 30-day window
+    double recoveryIndex = aiService.CalculateRecoveryIndex(30, (t + u) * 10);
+
     return Results.Ok(new
     {
         success = true,
         score = score,
+        recovery_index = recoveryIndex,
         breakdown = new
         {
             telco_contribution = t,
@@ -238,7 +242,8 @@ app.MapGet("/api/ai/score", (AIScoringService aiService, double? telco, double? 
             wallet_velocity = w,
             social_reputation = s
         },
-        algorithm = "Logistic Regression + GBM",
+        algorithm = "Logistic-GBM Ensemble",
+        region = "Sri Lanka (CRIB Aligned)",
         compliant = true
     });
 })

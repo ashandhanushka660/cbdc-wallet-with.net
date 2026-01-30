@@ -51,12 +51,18 @@
                 <div class="text-h6 text-weight-bold">AI Credit Index</div>
                 <div class="text-primary text-h4 text-weight-bolder">{{ aiDetails.score }}</div>
                 <div class="text-caption text-grey-5 uppercase tracking-widest">{{ aiDetails.score > 700 ? 'EXCELLENT' : 'GOOD' }}</div>
+
+                <div class="q-mt-sm">
+                  <q-badge color="accent" outline label="Recovery Index (RI)" class="q-mr-xs" />
+                  <span class="text-weight-bold text-accent">{{ aiDetails.recoveryIndex }}</span>
+                </div>
+
                 <q-tooltip class="bg-dark text-white shadow-24 q-pa-md" style="border: 1px solid #3a7bd5">
-                  <div class="text-weight-bold q-mb-xs">Explainable AI Breakdown ($X$)</div>
+                  <div class="text-weight-bold q-mb-xs">Research Framework Algorithm</div>
+                  <div class="q-mb-sm">Logistic-GBM Ensemble + Equation (4)</div>
                   <div class="row q-gutter-x-sm">
-                    <span>Telco: {{ (aiDetails.breakdown.telco * 100).toFixed(0) }}%</span>
-                    <span>Utility: {{ (aiDetails.breakdown.utility * 100).toFixed(0) }}%</span>
-                    <span>Velocity: {{ (aiDetails.breakdown.wallet * 100).toFixed(0) }}%</span>
+                    <span>X_telco: {{ (aiDetails.breakdown.telco * 100).toFixed(0) }}%</span>
+                    <span>X_utility: {{ (aiDetails.breakdown.utility * 100).toFixed(0) }}%</span>
                   </div>
                 </q-tooltip>
               </div>
@@ -158,6 +164,7 @@ const tickers = ref([
 
 const aiDetails = ref({
   score: 0,
+  recoveryIndex: 0,
   breakdown: {
     telco: 0,
     utility: 0,
@@ -180,11 +187,12 @@ onMounted(async () => {
       { id: 2, note: 'Atomic Transfer - Gas', amount: -2.50, created_at: new Date(Date.now() - 3600000).toISOString() }
     ]
 
-    // Fetch AI Score
+    // Fetch AI Score & Recovery Index
     try {
       const aiData = await getAIScore()
       if (aiData.success) {
         aiDetails.value.score = aiData.score
+        aiDetails.value.recoveryIndex = aiData.recovery_index
         aiDetails.value.breakdown = {
           telco: aiData.breakdown.telco_contribution,
           utility: aiData.breakdown.utility_contribution,
@@ -193,7 +201,7 @@ onMounted(async () => {
         }
       }
     } catch (err) {
-      console.error('Failed to fetch AI Score:', err)
+      console.error('Failed to fetch Research AI Data:', err)
     }
   }
 })
