@@ -143,7 +143,8 @@ const onSubmit = async () => {
   loading.value = true
 
   try {
-    const response = await fetch('http://localhost:5005/api/register', {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005'
+    const response = await fetch(`${API_URL}/api/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -162,10 +163,10 @@ const onSubmit = async () => {
       walletAddress.value = data.user.wallet.walletAddress
       balance.value = data.user.wallet.balance
       currency.value = data.user.wallet.currency
-      
+
       // Save for dashboard demo
       localStorage.setItem('cbdc_user', JSON.stringify(data.user))
-      
+
       showSuccess.value = true
     } else {
       $q.notify({

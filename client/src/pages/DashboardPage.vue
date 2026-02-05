@@ -69,8 +69,8 @@
               <q-badge color="purple" label="BETA" rounded />
             </div>
             <div class="text-center q-pa-md">
-              <div class="text-h2 text-weight-bolder text-white q-mb-xs">7.8</div>
-              <div class="text-caption text-grey-5 q-mb-md">Strong Financial Position</div>
+              <div class="text-h2 text-weight-bolder text-white q-mb-xs">{{ creditScore }}</div>
+              <div class="text-caption text-grey-5 q-mb-md">{{ rating }}</div>
               <q-btn flat color="primary" label="View Detailed Analysis" no-caps dense to="/ai-score" />
             </div>
             <div class="absolute-bottom bg-gradient-success" style="height: 4px;"></div>
@@ -142,6 +142,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { getUser } from 'src/api'
 
 const $q = useQuasar()
 
@@ -149,6 +150,8 @@ const balance = ref('0.00')
 const currency = ref('CBDC')
 const walletAddress = ref('CBDC-XXXXXXXXXXXX')
 const userName = ref('User')
+const creditScore = ref(0)
+const rating = ref('PENDING')
 
 const transactions = ref([
   { id: 1, label: 'Payroll Received', date: 'Jan 28, 2026', status: 'Completed', amount: '2,500.00', type: 'In' },
@@ -156,14 +159,42 @@ const transactions = ref([
   { id: 3, label: 'Internal Transfer', date: 'Jan 25, 2026', status: 'Pending', amount: '500.00', type: 'Out' },
 ])
 
-onMounted(() => {
+onMounted(async () => {
   const userData = localStorage.getItem('cbdc_user')
   if (userData) {
-    const user = JSON.parse(userData)
-    balance.value = user.wallet.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })
-    currency.value = user.wallet.currency
-    walletAddress.value = user.wallet.walletAddress
-    userName.value = user.firstName
+    const localUser = JSON.parse(userData)
+
+    // Initial load from local storage
+    if (localUser.wallet) {
+      balance.value = localUser.wallet.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })
+      currency.value = localUser.wallet.currency
+      walletAddress.value = localUser.wallet.walletAddress
+    }
+    userName.value = localUser.firstName
+    creditScore.value = localUser.creditScore || 0
+
+    // Fetch fresh data from backend
+    try {
+      const freshUser = await getUser(localUser.id)
+      if (freshUser && freshUser.id) {
+        localStorage.setItem('cbdc_user', JSON.stringify(freshUser))
+
+        balance.value = freshUser.wallet.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })
+        currency.value = freshUser.wallet.currency
+        walletAddress.value = freshUser.wallet.walletAddress
+        userName.value = freshUser.firstName
+        creditScore.value = freshUser.creditScore || 0
+
+        // Determine Rating
+        if (creditScore.value > 750) rating.value = 'Strong Financial Position'
+        else if (creditScore.value > 650) rating.value = 'Good Reliability'
+        else if (creditScore.value > 500) rating.value = 'Developing Stability'
+        else if (creditScore.value > 0) rating.value = 'Low Trust Index'
+        else rating.value = 'Analysis Pending'
+      }
+    } catch (error) {
+       console.error('Refresh error:', error)
+    }
   }
 })
 

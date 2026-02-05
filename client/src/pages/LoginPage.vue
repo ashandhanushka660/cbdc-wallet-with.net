@@ -93,25 +93,52 @@ const loading = ref(false)
 
 async function handleLogin() {
   loading.value = true
-  // Simulate API call for now since we only have /register endpoint
-  setTimeout(() => {
-    loading.value = false
-    $q.notify({
-      message: 'Login Successful',
-      color: 'positive',
-      icon: 'check_circle'
-    })
-    // For demo purposes, we'll just set a dummy user if none exists
-    if (!localStorage.getItem('cbdc_user')) {
-      localStorage.setItem('cbdc_user', JSON.stringify({
-        firstName: 'Research',
-        lastName: 'User',
+
+  try {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005'
+    const response = await fetch(`${API_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         email: email.value,
-        wallet: { walletAddress: 'CBDC-DEMO-ONLY-123', balance: 12500, currency: 'CBDC' }
-      }))
+        password: password.value
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      $q.notify({
+        message: 'Login Successful',
+        color: 'positive',
+        icon: 'check_circle'
+      })
+
+      // Save user data for dashboard
+      localStorage.setItem('cbdc_user', JSON.stringify(data.user))
+
+      router.push('/dashboard')
+    } else {
+      $q.notify({
+        message: data.message || 'Login failed',
+        color: 'negative',
+        icon: 'error',
+        position: 'top'
+      })
     }
-    router.push('/dashboard')
-  }, 1500)
+  } catch (error) {
+    console.error('Login error:', error)
+    $q.notify({
+      message: 'Failed to connect to server. Please ensure the backend is running.',
+      color: 'negative',
+      icon: 'wifi_off',
+      position: 'top'
+    })
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

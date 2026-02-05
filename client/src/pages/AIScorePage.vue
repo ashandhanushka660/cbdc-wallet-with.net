@@ -12,12 +12,14 @@
           <div class="wallet-card text-center q-pa-xl shadow-24 flex flex-col items-center justify-center">
             <div class="score-circle q-mb-lg flex flex-center">
               <div>
-                <div class="text-h1 text-weight-bolder text-white">742</div>
-                <div class="text-subtitle1 text-grey-5 font-bold">EXCELLENT</div>
+                <div v-if="loading" class="text-subtitle1 text-grey-5">...</div>
+                <div v-else class="text-h1 text-weight-bolder text-white">{{ creditScore }}</div>
+                <div class="text-subtitle1 text-grey-5 font-bold">{{ rating }}</div>
               </div>
             </div>
-            <p class="text-grey-4 q-px-md">Your score has increased by <strong>12 points</strong> since your last assessment.</p>
-            <q-btn label="Recalculate Score" class="btn-primary q-px-lg q-mt-md" rounded no-caps unelevated />
+            <p v-if="creditScore > 0" class="text-grey-4 q-px-md">Your AI-calculated sovereign credit reliability is verified.</p>
+            <p v-else class="text-grey-4 q-px-md">Our AI Networker is currently analyzing your digital footprint. Check back in a few seconds.</p>
+            <q-btn label="Refresh Data" @click="refreshData" class="btn-primary q-px-lg q-mt-md" rounded no-caps unelevated :loading="loading" />
           </div>
         </div>
 
@@ -65,17 +67,59 @@
 </template>
 
 <script setup>
-const breakdown = [
-  { icon: 'history', label: 'Transaction History', score: 88, color: 'text-green-4', desc: 'Consistency in wallet interactions and liquidity management.' },
-  { icon: 'verified_user', label: 'Wallet Security', score: 95, color: 'text-green-5', desc: 'Advanced MFA enabled and secure transaction patterns detected.' },
-  { icon: 'balance', label: 'Asset Stability', score: 62, color: 'text-amber-5', desc: 'Asset volatility exposure is slightly higher than optimized levels.' }
-]
+import { ref, onMounted } from 'vue'
+import { getUser } from 'src/api'
+
+const creditScore = ref(0)
+const rating = ref('PENDING')
+const loading = ref(true)
+
+const breakdown = ref([
+  { icon: 'history', label: 'Transaction History', score: 0, color: 'text-green-4', desc: 'Consistency in wallet interactions and liquidity management.' },
+  { icon: 'verified_user', label: 'Network Integrity', score: 0, color: 'text-green-5', desc: 'Verification status and telco/utility data consistency.' },
+  { icon: 'balance', label: 'Account Health', score: 0, color: 'text-amber-5', desc: 'Balance maintenance and recovery indicators.' }
+])
 
 const recommendations = [
-  { icon: 'swap_horiz', title: 'Optimize Liquidity', desc: 'Transfer 500 CBDC to your reserve vault to improve your stability score.', color: 'primary' },
-  { icon: 'security', title: 'Update Protocol', desc: 'Your current smart contract interaction version is legacy. Update to v2.4.', color: 'purple-4' },
-  { icon: 'trending_up', title: 'Staking Opportunity', desc: 'Based on your holding patterns, you could earn 4% APY by staking IOTA.', color: 'teal-4' }
+  { icon: 'swap_horiz', title: 'Optimize Liquidity', desc: 'Maintain a minimum balance of 500 CBDC to improve your stability score.', color: 'primary' },
+  { icon: 'security', title: 'Update Protocol', desc: 'Ensure your National ID is verified to reach the Platinum scoring tier.', color: 'purple-4' },
+  { icon: 'trending_up', title: 'Transaction Velocity', desc: 'Regular weekly transactions can increase your score by up to 25 points.', color: 'teal-4' }
 ]
+
+const refreshData = async () => {
+  loading.value = true
+  const userJson = localStorage.getItem('cbdc_user')
+  if (userJson) {
+    const localUser = JSON.parse(userJson)
+    try {
+      const freshUser = await getUser(localUser.id)
+      if (freshUser && freshUser.id) {
+        creditScore.value = freshUser.creditScore || 0
+
+        // Update local storage with fresh data
+        localStorage.setItem('cbdc_user', JSON.stringify(freshUser))
+
+        // Determine Rating
+        if (creditScore.value > 750) rating.value = 'EXCELLENT'
+        else if (creditScore.value > 650) rating.value = 'GOOD'
+        else if (creditScore.value > 500) rating.value = 'FAIR'
+        else if (creditScore.value > 0) rating.value = 'POOR'
+        else rating.value = 'CALCULATING...'
+
+        // Mock some breakdown scores based on real total
+        breakdown.value[0].score = Math.min(100, Math.floor(creditScore.value / 10) + 15)
+        breakdown.value[1].score = Math.min(100, Math.floor(creditScore.value / 12) + 20)
+        breakdown.value[2].score = Math.min(100, Math.floor(creditScore.value / 15) + 30)
+      }
+    } catch (error) {
+      console.error('Error fetching fresh user data:', error)
+      creditScore.value = localUser.creditScore || 0
+    }
+  }
+  loading.value = false
+}
+
+onMounted(refreshData)
 </script>
 
 <style scoped lang="scss">
